@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/github/smimesign/certstore"
 	cms "github.com/github/smimesign/ietf-cms"
+	"github.com/github/smimesign/qcstore"
 	"github.com/pkg/errors"
 )
 
@@ -58,6 +58,7 @@ func commandSign() error {
 		return errors.Wrap(err, "failed to create signed data")
 	}
 	if err = sd.Sign([]*x509.Certificate{cert}, signer); err != nil {
+		fmt.Printf("failed to sign with certificate CN: %s\n", cert.Subject.CommonName)
 		return errors.Wrap(err, "failed to sign message")
 	}
 	if *detachSignFlag {
@@ -105,7 +106,7 @@ func commandSign() error {
 
 // findUserIdentity attempts to find an identity to sign with in the certstore
 // by checking available identities against the --local-user argument.
-func findUserIdentity() (certstore.Identity, error) {
+func findUserIdentity() (qcstore.Identity, error) {
 	var (
 		email string
 		fpr   []byte

@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/github/smimesign/certstore"
+	"github.com/github/smimesign/qcstore"
 	"github.com/pborman/getopt/v2"
 	"github.com/pkg/errors"
 )
@@ -40,7 +40,7 @@ var (
 	// Remaining arguments
 	fileArgs []string
 
-	idents []certstore.Identity
+	idents []qcstore.Identity
 
 	// these are changed in tests
 	stdin  io.ReadCloser  = os.Stdin
@@ -73,7 +73,7 @@ func runCommand() error {
 	}
 
 	// Open certificate store
-	store, err := certstore.Open()
+	store, err := qcstore.Open()
 	if err != nil {
 		return errors.Wrap(err, "failed to open certificate store")
 	}
