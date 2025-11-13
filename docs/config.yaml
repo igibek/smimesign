@@ -1,0 +1,6 @@
+AWS_KEY_ID: "5b0fcd89-****-****-****-219727925d89" # provide real key id
+AWS_KEY_ARN: "arn:aws:kms:eu-central-1:523676012530:key/5b0fcd89-****-****-****-219727925d89" # provide real arn for the key
+CERT_PATH: "/path/to/the/certificate.crt" # absolute path to the Public CA provided certificate
+AWS_ACCESS_KEY_ID: ""
+AWS_SECRET_ACCESS_KEY: ""
+AWS_REGION: ""
