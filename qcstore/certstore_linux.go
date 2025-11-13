@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/spf13/viper"
 	"go.step.sm/crypto/kms/apiv1"
 	"go.step.sm/crypto/kms/awskms"
 )
@@ -24,6 +25,8 @@ type LinuxStore struct {
 }
 
 func (s *LinuxStore) Identities() ([]Identity, error) {
+	// TODO: in reality this should iterate through the well-know folder for the certificates and populate identitfies
+	// currently this version only works with a single certificate provided as environment variable. Checkout LinuxIdentity Certificate function
 	idents := []Identity{}
 
 	idents = append(idents, &LinuxIdentity{})
@@ -45,31 +48,46 @@ type LinuxIdentity struct {
 }
 
 func (i *LinuxIdentity) Certificate() (*x509.Certificate, error) {
-	// TODO: read the certificate
-	certPem, err := os.ReadFile("./real-smime-certificate.crt")
+	certPath := viper.GetString("CERT_PATH")
+	if certPath == "" {
+		return nil, fmt.Errorf("failed CERT_PATH is empty")
+	}
+
+	certPem, err := os.ReadFile(certPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read the certificate: %w", err)
 	}
+	rest := certPem
+	var certificates []*x509.Certificate
 
-	block, _ := pem.Decode(certPem)
+	for {
+		var block *pem.Block
+		block, rest = pem.Decode(rest)
+		if block == nil {
+			break
+		}
 
-	if block == nil || block.Type != "CERTIFICATE" {
-		return nil, fmt.Errorf("failed to find or decode PEM block of type certificate")
+		if block.Type == "CERTIFICATE" {
+			cert, err := x509.ParseCertificate(block.Bytes)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse DER certificate: %w", err)
+			}
+			certificates = append(certificates, cert)
+		}
+
 	}
 
-	cert, err := x509.ParseCertificate(block.Bytes)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse DER certificate: %w", err)
-	}
-
-	i.cert = cert
+	i.cert = certificates[0]
+	i.chain = certificates
 
 	return i.cert, nil
 }
 
 // CertificateChain attempts to get the identity's full certificate chain.
 func (i *LinuxIdentity) CertificateChain() ([]*x509.Certificate, error) {
+	if i.chain != nil {
+		return i.chain, nil
+	}
 	chain := make([]*x509.Certificate, len(i.chain))
 	chain = append(chain, i.cert)
 	i.chain = chain
@@ -78,22 +96,25 @@ func (i *LinuxIdentity) CertificateChain() ([]*x509.Certificate, error) {
 
 // Signer gets a crypto.Signer that uses the identity's private key.
 func (i *LinuxIdentity) Signer() (crypto.Signer, error) {
-	// TODO: configure and return the KMS signer
+
+	// TODO: get the encrypted AWS access key from config file
 	kms, err := awskms.New(context.TODO(), apiv1.Options{})
 
 	if err != nil {
 		return nil, fmt.Errorf("failed creating KMS %s", err)
 	}
-
+	signingKey := viper.GetString("AWS_KEY_ARN")
+	if signingKey == "" {
+		return nil, fmt.Errorf("failed to read AWS_KEY_ARN value")
+	}
 	signer, err := kms.CreateSigner(&apiv1.CreateSignerRequest{
-		SigningKey: "arn:aws:kms:eu-central-1:523676012530:key/5b0fcd89-7688-425f-9c46-219727925d89", // TODO: get this from environment variable
+		SigningKey: signingKey,
 	})
 
 	if err != nil {
 		return nil, fmt.Errorf("failed creating signer: %w", err)
 	}
-	// pub, _ := x509.MarshalPKIXPublicKey(signer.Public())
-	// fmt.Printf("debug kms signer %s", pub)
+
 	return signer, nil
 }
 

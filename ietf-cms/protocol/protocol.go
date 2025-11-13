@@ -17,7 +17,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/github/smimesign/ietf-cms/oid"
+	"github.com/igibek/qcsign/ietf-cms/oid"
 )
 
 // ASN1Error is an error from parsing ASN.1 structures.
@@ -485,6 +485,7 @@ func (si SignerInfo) subjectKeyIdentifierSID() ([]byte, error) {
 func (si SignerInfo) Hash() (crypto.Hash, error) {
 	algo := si.DigestAlgorithm.Algorithm.String()
 	hash := oid.DigestAlgorithmToCryptoHash[algo]
+	// log.Fatalf("HERE FOR DEBUG:%w", hash)
 	if hash == 0 || !hash.Available() {
 		return 0, ErrUnsupported
 	}
@@ -666,7 +667,7 @@ func (sd *SignedData) AddSignerInfo(chain []*x509.Certificate, signer crypto.Sig
 	}
 
 	digestAlgorithmID := digestAlgorithmForPublicKey(pub)
-
+	// log.Fatal("digest algo", digestAlgorithmID)
 	signatureAlgorithmOID, ok := oid.X509PublicKeyAndDigestAlgorithmToSignatureAlgorithm[cert.PublicKeyAlgorithm][digestAlgorithmID.Algorithm.String()]
 	if !ok {
 		return errors.New("unsupported certificate public key algorithm")
@@ -683,7 +684,7 @@ func (sd *SignedData) AddSignerInfo(chain []*x509.Certificate, signer crypto.Sig
 		Signature:          nil,
 		UnsignedAttrs:      nil,
 	}
-
+	fmt.Println("signer info", si)
 	// Get the message
 	content, err := sd.EncapContentInfo.EContentValue()
 	if err != nil {

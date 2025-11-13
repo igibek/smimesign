@@ -1,6 +1,6 @@
 # smimesign (S/MIME Sign)
 
-![PkgGoDev](https://pkg.go.dev/badge/github.com/github/smimesign?utm_source=godoc)
+![PkgGoDev](https://pkg.go.dev/badge/github.com/igibek/qcsign?utm_source=godoc)
 
 Smimesign is an S/MIME signing utility for macOS and Windows that is compatible with Git. This allows developers to sign their Git commits and tags using X.509 certificates issued by public certificate authorities or their organization's internal certificate authority. Smimesign uses keys and certificates already stored in the _macOS Keychain_ or the _Windows Certificate Store_.
 
@@ -34,7 +34,7 @@ You can install `smimesign` using [Homebrew](https://brew.sh/):
 brew install smimesign
 ```
 
-You can also download a prebuilt macOS binary [here](https://github.com/github/smimesign/releases/latest). Put the binary on your `$PATH`, so Git will be able to find it.
+You can also download a prebuilt macOS binary [here](https://github.com/igibek/qcsign/releases/latest). Put the binary on your `$PATH`, so Git will be able to find it.
 
 ### Windows
 
@@ -44,14 +44,14 @@ You can install `smimesign` using [`scoop`](https://github.com/lukesampson/scoop
 scoop install smimesign
 ```
 
-You can download prebuilt Windows binaries [here](https://github.com/github/smimesign/releases/latest). Put the appropriate binary on your `%PATH%`, so Git will be able to find it.
+You can download prebuilt Windows binaries [here](https://github.com/igibek/qcsign/releases/latest). Put the appropriate binary on your `%PATH%`, so Git will be able to find it.
 
 ### Building from source
 
 - Make sure you have the [Go compiler](https://golang.org/dl/) installed.
 - Make sure that you have a gcc compiler setup in your path to compile embedded c in go files. 
 - You'll probably want to put `$GOPATH/bin` on your `$PATH`.
-- Run `go get github.com/github/smimesign`
+- Run `go get github.com/igibek/qcsign`
 
 ## Configuring Git
 

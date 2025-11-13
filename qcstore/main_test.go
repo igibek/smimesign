@@ -9,7 +9,7 @@ import (
 	"crypto/x509/pkix"
 	"testing"
 
-	"github.com/github/smimesign/fakeca"
+	"github.com/igibek/qcsign/fakeca"
 )
 
 var (

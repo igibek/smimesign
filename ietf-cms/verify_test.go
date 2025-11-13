@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/github/smimesign/ietf-cms/protocol"
+	"github.com/igibek/qcsign/ietf-cms/protocol"
 	"golang.org/x/xerrors"
 )
 
@@ -133,7 +133,7 @@ func TestVerifyOpenSSLDetached(t *testing.T) {
 }
 
 func TestVerifyOutlookDetached(t *testing.T) {
-	t.Skip("Test fails. See https://github.com/github/smimesign/issues/150")
+	t.Skip("Test fails. See https://github.com/igibek/qcsign/issues/150")
 
 	sd, err := ParseSignedData(fixtureSignatureOutlookDetached)
 	if err != nil {
@@ -146,7 +146,7 @@ func TestVerifyOutlookDetached(t *testing.T) {
 }
 
 func TestVerifySmimesignAttachedWithTimestamp(t *testing.T) {
-	t.Skip("Test fails. See https://github.com/github/smimesign/issues/150")
+	t.Skip("Test fails. See https://github.com/igibek/qcsign/issues/150")
 
 	sd, err := ParseSignedData(fixtureSmimesignAttachedWithTimestamp)
 	if err != nil {

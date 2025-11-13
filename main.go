@@ -7,9 +7,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/github/smimesign/qcstore"
+	"github.com/igibek/qcsign/qcstore"
 	"github.com/pborman/getopt/v2"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 
 	// default timestamp authority URL. This can be set at build time by running
 	// go build -ldflags "-X main.defaultTSA=${https://whatever}"
-	defaultTSA = ""
+	defaultTSA = "http://timestamp.digicert.com"
 
 	// Action flags
 	helpFlag     = getopt.BoolLong("help", 'h', "print this help message")
@@ -35,7 +36,7 @@ var (
 	statusFdOpt     = getopt.IntLong("status-fd", 0, -1, "write special status strings to the file descriptor n.", "n")
 	keyFormatOpt    = getopt.EnumLong("keyid-format", 0, []string{"long"}, "long", "select  how  to  display key IDs.", "{long}")
 	tsaOpt          = getopt.StringLong("timestamp-authority", 't', defaultTSA, "URL of RFC3161 timestamp authority to use for timestamping", "url")
-	includeCertsOpt = getopt.IntLong("include-certs", 0, -2, "-3 is the same as -2, but ommits issuer when cert has Authority Information Access extension. -2 includes all certs except root. -1 includes all certs. 0 includes no certs. 1 includes leaf cert. >1 includes n from the leaf. Default -2.", "n")
+	includeCertsOpt = getopt.IntLong("include-certs", 0, -1, "-3 is the same as -2, but ommits issuer when cert has Authority Information Access extension. -2 includes all certs except root. -1 includes all certs. 0 includes no certs. 1 includes leaf cert. >1 includes n from the leaf. Default -2.", "n")
 
 	// Remaining arguments
 	fileArgs []string
@@ -49,6 +50,23 @@ var (
 )
 
 func main() {
+
+	// loading configuration file
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("$HOME/.qcsign")
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found, handle error (e.g., use defaults)
+			fmt.Println("No config file found, using defaults and environment variables.")
+		} else {
+			// Config file was found but could not be loaded
+			fmt.Errorf("failed reading config file: %s", err)
+		}
+	}
+
 	if err := runCommand(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

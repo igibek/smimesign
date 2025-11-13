@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/github/smimesign/fakeca"
-	"github.com/github/smimesign/qcstore"
+	"github.com/igibek/qcsign/fakeca"
+	"github.com/igibek/qcsign/qcstore"
 	"github.com/pborman/getopt/v2"
 )
 

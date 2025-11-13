@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	cms "github.com/github/smimesign/ietf-cms"
-	"github.com/github/smimesign/qcstore"
+	cms "github.com/igibek/qcsign/ietf-cms"
+	"github.com/igibek/qcsign/qcstore"
 	"github.com/pkg/errors"
 )
 
@@ -57,6 +57,7 @@ func commandSign() error {
 	if err != nil {
 		return errors.Wrap(err, "failed to create signed data")
 	}
+
 	if err = sd.Sign([]*x509.Certificate{cert}, signer); err != nil {
 		fmt.Printf("failed to sign with certificate CN: %s\n", cert.Subject.CommonName)
 		return errors.Wrap(err, "failed to sign message")

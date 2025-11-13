@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/github/smimesign/ietf-cms/oid"
-	"github.com/github/smimesign/ietf-cms/protocol"
+	"github.com/igibek/qcsign/ietf-cms/oid"
+	"github.com/igibek/qcsign/ietf-cms/protocol"
 )
 
 // HTTPClient is an interface for *http.Client, allowing callers to customize
