@@ -21,6 +21,7 @@ var (
 	// default timestamp authority URL. This can be set at build time by running
 	// go build -ldflags "-X main.defaultTSA=${https://whatever}"
 	defaultTSA = "http://timestamp.digicert.com"
+	// defaultTSA = ""
 
 	// Action flags
 	helpFlag     = getopt.BoolLong("help", 'h', "print this help message")
@@ -66,6 +67,11 @@ func main() {
 			fmt.Errorf("failed reading config file: %s", err)
 		}
 	}
+
+	// setting AWS environment variables from  config file
+	// os.Setenv("AWS_ACCESS)KEY_ID", viper.GetString("AWS_ACCESS_KEY_ID"))
+	// os.Setenv("AWS_SECRET_ACCESS_KEY", viper.GetString("AWS_SECRET_ACCESS_KEY"))
+	// os.Setenv("AWS_REGION", viper.GetString("AWS_REGION"))
 
 	if err := runCommand(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
