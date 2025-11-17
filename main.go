@@ -69,9 +69,9 @@ func main() {
 	}
 
 	// setting AWS environment variables from  config file
-	// os.Setenv("AWS_ACCESS)KEY_ID", viper.GetString("AWS_ACCESS_KEY_ID"))
-	// os.Setenv("AWS_SECRET_ACCESS_KEY", viper.GetString("AWS_SECRET_ACCESS_KEY"))
-	// os.Setenv("AWS_REGION", viper.GetString("AWS_REGION"))
+	os.Setenv("AWS_ACCESS_KEY_ID", viper.GetString("AWS_ACCESS_KEY_ID"))
+	os.Setenv("AWS_SECRET_ACCESS_KEY", viper.GetString("AWS_SECRET_ACCESS_KEY"))
+	os.Setenv("AWS_REGION", viper.GetString("AWS_REGION"))
 
 	if err := runCommand(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
