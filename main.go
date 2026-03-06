@@ -20,8 +20,7 @@ var (
 
 	// default timestamp authority URL. This can be set at build time by running
 	// go build -ldflags "-X main.defaultTSA=${https://whatever}"
-	defaultTSA = "http://timestamp.digicert.com"
-	// defaultTSA = ""
+	defaultTSA = ""
 
 	// Action flags
 	helpFlag     = getopt.BoolLong("help", 'h', "print this help message")
