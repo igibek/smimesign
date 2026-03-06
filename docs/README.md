@@ -1,5 +1,7 @@
 # How-to
 
+
+
 ## 1. Initialization steps
 
 1. We first need to generate asymmetric key inside AWS. You can follow the instruction here on how to create asymmetric key for signing purpose: https://docs.aws.amazon.com/kms/latest/developerguide/asymm-create-key.html
@@ -9,6 +11,8 @@
         - VERIFY
         - GetPublicKey
         - DescribeKey
+    - **NOTE**: during creation process, you will need to specify the IAM user. If you do not have IAM user, you will have to create one with the least-possible privilege. You can name your IAM user *kmsuser*.   
+
 2. Generate Certificate Signing Request (CSR) using openssl. The CSR is going to be used to request for S/MIME certificate from Public Certificate Authority.
 
 `openssl req -nodes --newkey rsa:4096 -keyout discard.key -out smime.csr`
@@ -19,11 +23,12 @@ For Command Name (CN) field you will need to provide email address for which S/M
 Note: we do not need the generated key-pair discard.key because we are going to use AWS KMS to sign our CSR.
 
 3. Sign the generated `smime.csr` with AWS KMS. There is python script aws-kms-sign-csr.py that will help with signing the CSR with key stored inside the AWS KMS.
-`.\aws-kms-sign-csr.py --keyid <key-id> --signalgo=ECDSA --hashalgo=sha256 --region=<aws-region> smime.csr > signed-smime.csr`
+`.\aws-kms-sign-csr.py --keyid <key-id> --signalgo=ECDSA --hashalgo=sha384 --region=<aws-region> smime.csr > signed-smime.csr`
 
 4. Buy the S/MIME certificate from Public Certificate Authority (e.g. SSL.com). When they ask, you will need to provide signed-smime.csr.
 
 5. Public CA will send you the email to verify that you indeed own the EMAIL listed in CSR file. 
+
 6. Download a generated certificate
 
 ## 2. Signing steps
@@ -42,7 +47,21 @@ For signing purposes we use a custom tool called QCSIGN (fork of https://github.
 
 ## 3. Verification steps
 
+Coming soon...
 
 ## Debugging:
 
 Run the command to view the certificates: ```git cat-file commit HEAD | sed -n '/BEGIN/, /END/p' | sed 's/^ //g' | sed 's/gpgsig //g' | sed 's/SIGNED MESSAGE/PKCS7/g' | openssl pkcs7 -print -print_certs -text```
+
+
+## Creating IAM user
+1. Go to "IAM > User" tab and press "Create User" button
+2. Step 1: Generate a username, e.g. kmsuser and press "Next button"
+3. Step 2: You do not have to select any permission. We will apply policy during the key creation process. Just press "Next button".
+4. Finally press "Create User" button.
+
+## Generating access key
+1. Go to the user and select "Security Credentials" tab.
+2. Press "Create access key" button. 
+3. Select "Other" as use case.
+4. Give a descriptive description and press "Create access key" button.
