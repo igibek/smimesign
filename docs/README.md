@@ -6,6 +6,7 @@
 
 1. We first need to generate asymmetric key inside AWS. You can follow the instruction here on how to create asymmetric key for signing purpose: https://docs.aws.amazon.com/kms/latest/developerguide/asymm-create-key.html
     - Select as Key Spec: ECC_NIST_P384
+    - Add an IAM user with the limited permissions as an user of the key (see below on how to create IAM user)
     - Allow key users only following permissions:
         - SIGN
         - VERIFY
@@ -15,15 +16,14 @@
 
 2. Generate Certificate Signing Request (CSR) using openssl. The CSR is going to be used to request for S/MIME certificate from Public Certificate Authority.
 
-`openssl req -nodes --newkey rsa:4096 -keyout discard.key -out smime.csr`
+    - Run the command: `openssl req -nodes --newkey rsa:4096 -keyout discard.key -out smime.csr`.  This above command will generate CSR in interactive mode. Please fill out all relevant information. 
+    - For S/MIME certificate the most important fields are Command Name (CN) and email address. You CN and email address must match the git committer information. 
+    - Note: we do not need the generated key-pair discard.key because we are going to use AWS KMS to sign our CSR.
 
-This above command will generate CSR in interactive mode. Please fill out all relevant information. 
-For Command Name (CN) field you will need to provide email address for which S/MIME will be requested. 
-
-Note: we do not need the generated key-pair discard.key because we are going to use AWS KMS to sign our CSR.
-
-3. Sign the generated `smime.csr` with AWS KMS. There is python script aws-kms-sign-csr.py that will help with signing the CSR with key stored inside the AWS KMS.
-`.\aws-kms-sign-csr.py --keyid <key-id> --signalgo=ECDSA --hashalgo=sha384 --region=<aws-region> smime.csr > signed-smime.csr`
+3. Sign the generated `smime.csr` with AWS KMS. There is python executable `utils/dist/aws-kms-sign-csr` that will help with signing the CSR with key stored inside the AWS KMS.
+`./aws-kms-sign-csr --keyid <key-id> --signalgo=ECDSA --hashalgo=sha384 --region=<aws-region> smime.csr > signed-smime.csr`
+    - If the executable is not running, please use the `utils/aws-kms-sign-csr.py` script directly. To run it, you will need to install the dependencies using `pip install -r requirements.txt`
+    - To view the generated CSR content, run the command: `openssl req -in smime.csr -noout -text`. Please verify that all the information is correct, and that it is using AWS KMS key.
 
 4. Buy the S/MIME certificate from Public Certificate Authority (e.g. SSL.com). When they ask, you will need to provide signed-smime.csr.
 
